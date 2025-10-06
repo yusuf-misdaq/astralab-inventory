@@ -469,15 +469,22 @@
 
     <script type="module">
         // Firebase Configuration (REPLACE WITH YOUR CONFIG)
-        const firebaseConfig = {
-           apiKey: "AIzaSyBRegRRIbXVEJH55DBfh0SZAfdes1I33sk",
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBRegRRIbXVEJH55DBfh0SZAfdes1I33sk",
   authDomain: "astralab-inventory.firebaseapp.com",
   projectId: "astralab-inventory",
   storageBucket: "astralab-inventory.firebasestorage.app",
   messagingSenderId: "673789714387",
   appId: "1:673789714387:web:96fe6e620f0378e5a25926"
-        };
-/ Initialize Firebase
+};
+
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
         // Check if Firebase is configured
