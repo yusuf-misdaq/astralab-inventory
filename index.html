@@ -470,13 +470,15 @@
     <script type="module">
         // Firebase Configuration (REPLACE WITH YOUR CONFIG)
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+           apiKey: "AIzaSyBRegRRIbXVEJH55DBfh0SZAfdes1I33sk",
+  authDomain: "astralab-inventory.firebaseapp.com",
+  projectId: "astralab-inventory",
+  storageBucket: "astralab-inventory.firebasestorage.app",
+  messagingSenderId: "673789714387",
+  appId: "1:673789714387:web:96fe6e620f0378e5a25926"
         };
+/ Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
         // Check if Firebase is configured
         const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
