@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astralab Inventory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .login-container h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-container button:hover {
+            background: #5568d3;
+        }
+        
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .app-container {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+        
+        .logout-btn {
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        
+        .section {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .controls input, .controls select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #667eea;
+            border-bottom: 2px solid #e0e0e0;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        th:hover {
+            background: #e9ecef;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .actions button {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .firebase-setup {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .firebase-setup h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .firebase-setup ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .firebase-setup li {
+            margin-bottom: 8px;
+        }
+        
+        .firebase-setup code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <h1>🔒 Astralab Inventory</h1>
+        <input type="password" id="passwordInput" placeholder="Enter password" />
+        <button onclick="login()">Login</button>
+        <div class="error" id="loginError"></div>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-container" id="appContainer">
+        <div class="header">
+            <h1>📦 Astralab Inventory Manager</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <!-- Firebase Setup Notice -->
+        <div class="firebase-setup" id="firebaseNotice">
+            <h3>⚠️ Firebase Setup Required</h3>
+            <p>To enable real-time sync between devices, follow these steps:</p>
+            <ol>
+                <li>Go to <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></li>
+                <li>Create a new project (name it whatever you want)</li>
+                <li>Click "Add app" → Web (</> icon)</li>
+                <li>Register your app and copy the config values</li>
+                <li>Paste them in the JavaScript section at the bottom of this HTML file</li>
+                <li>In Firebase Console, go to "Build" → "Firestore Database" → "Create Database" (start in test mode)</li>
+            </ol>
+            <button class="btn" onclick="document.getElementById('firebaseNotice').style.display='none'">Got it, I'll set it up later</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('inventory')">Inventory</button>
+            <button class="tab" onclick="switchTab('customers')">Customer Sales</button>
+            <button class="tab" onclick="switchTab('partners')">Partner Payments</button>
+        </div>
+
+        <!-- Inventory Section -->
+        <div class="section active" id="inventorySection">
+            <div class="controls">
+                <input type="text" id="inventorySearch" placeholder="Search items..." oninput="filterInventory()" />
+                <select id="categoryFilter" onchange="filterInventory()">
+                    <option value="">All Categories</option>
+                    <option value="Perfumes">Perfumes</option>
+                    <option value="Health & Wellness">Health & Wellness</option>
+                    <option value="Music">Music</option>
+                    <option value="Books">Books</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="supplierFilter" onchange="filterInventory()">
+                    <option value="">All Suppliers</option>
+                </select>
+                <button class="btn btn-success" onclick="openAddInventory()">+ Add Item</button>
+                <button class="btn" onclick="exportData('inventory')">Export CSV</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('inventory', 'name')">Item Name</th>
+                        <th onclick="sortTable('inventory', 'category')">Category</th>
+                        <th onclick="sortTable('inventory', 'supplier')">Supplier</th>
+                        <th onclick="sortTable('inventory', 'quantity')">Quantity</th>
+                        <th onclick="sortTable('inventory', 'cost')">Cost</th>
+                        <th onclick="sortTable('inventory', 'date')">Purchase Date</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Customer Sales Section -->
+        <div class="section" id="customersSection">
+            <div class="controls">
+                <input type="text" id="customerSearch" placeholder="Search customers..." oninput="filterCustomers()" />
+                <select id="paymentFilter" onchange="filterCustomers()">
+                    <option value="">All Payments</option>
+                    <option value="paid">Paid</option>
+                    <option value="unpaid">Unpaid</option>
+                </select>
+                <button class="btn btn-success" onclick="openAddCustomer()">+ Add Sale</button>
+                <button class="btn" onclick="exportData('customers')">Export CSV</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('customers', 'name')">Customer Name</th>
+                        <th onclick="sortTable('customers', 'amount')">Amount</th>
+                        <th onclick="sortTable('customers', 'date')">Sale Date</th>
+                        <th onclick="sortTable('customers', 'status')">Status</th>
+                        <th onclick="sortTable('customers', 'paymentDate')">Payment Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="customersTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Partner Payments Section -->
+        <div class="section" id="partnersSection">
+            <div class="controls">
+                <input type="text" id="partnerSearch" placeholder="Search..." oninput="filterPartners()" />
+                <button class="btn btn-success" onclick="openAddPartner()">+ Add Payment</button>
+                <button class="btn" onclick="exportData('partners')">Export CSV</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('partners', 'date')">Date</th>
+                        <th onclick="sortTable('partners', 'from')">From</th>
+                        <th onclick="sortTable('partners', 'to')">To</th>
+                        <th onclick="sortTable('partners', 'amount')">Amount</th>
+                        <th onclick="sortTable('partners', 'purpose')">Purpose</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="partnersTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add Item</h2>
+            <div id="modalForm"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Configuration (REPLACE WITH YOUR CONFIG)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Check if Firebase is configured
+        const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
+        
+        let db = null;
+        
+        if (isFirebaseConfigured) {
+            try {
+                // Import Firebase
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                const { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+                
+                // Initialize Firebase
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                
+                // Hide setup notice
+                document.getElementById('firebaseNotice').style.display = 'none';
+                
+                // Set up real-time listeners
+                window.firestoreUtils = { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query };
+                
+                onSnapshot(collection(db, 'inventory'), (snapshot) => {
+                    window.inventoryData = [];
+                    snapshot.forEach((doc) => {
+                        window.inventoryData.push({ id: doc.id, ...doc.data() });
+                    });
+                    if (window.authenticated) renderInventory();
+                });
+                
+                onSnapshot(collection(db, 'customers'), (snapshot) => {
+                    window.customersData = [];
+                    snapshot.forEach((doc) => {
+                        window.customersData.push({ id: doc.id, ...doc.data() });
+                    });
+                    if (window.authenticated) renderCustomers();
+                });
+                
+                onSnapshot(collection(db, 'partners'), (snapshot) => {
+                    window.partnersData = [];
+                    snapshot.forEach((doc) => {
+                        window.partnersData.push({ id: doc.id, ...doc.data() });
+                    });
+                    if (window.authenticated) renderPartners();
+                });
+                
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+            }
+        }
+        
+        window.db = db;
+    </script>
+
+    <script>
+        // Password
+        const PASSWORD = "nooshinstelescope";
+        
+        // Data storage
+        let inventoryData = [];
+        let customersData = [];
+        let partnersData = [];
+        let authenticated = false;
+        
+        // Login
+        function login() {
+            const input = document.getElementById('passwordInput').value;
+            if (input === PASSWORD) {
+                authenticated = true;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('loginError').textContent = 'Incorrect password';
+            }
+        }
+        
+        function logout() {
+            authenticated = false;
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+        }
+        
+        // Load data
+        function loadData() {
+            if (!window.db) {
+                // Use localStorage if Firebase not configured
+                inventoryData = JSON.parse(localStorage.getItem('inventory') || '[]');
+                customersData = JSON.parse(localStorage.getItem('customers') || '[]');
+                partnersData = JSON.parse(localStorage.getItem('partners') || '[]');
+                renderAll();
+            }
+        }
+        
+        // Save data
+        function saveData() {
+            if (!window.db) {
+                localStorage.setItem('inventory', JSON.stringify(inventoryData));
+                localStorage.setItem('customers', JSON.stringify(customersData));
+                localStorage.setItem('partners', JSON.stringify(partnersData));
+            }
+        }
+        
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Section').classList.add('active');
+        }
+        
+        // Render functions
+        function renderAll() {
+            renderInventory();
+            renderCustomers();
+            renderPartners();
+            updateSupplierFilter();
+        }
+        
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTable');
+            const search = document.getElementById('inventorySearch').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const supplierFilter = document.getElementById('supplierFilter').value;
+            
+            let filtered = inventoryData.filter(item => {
+                const matchesSearch = Object.values(item).some(val => 
+                    String(val).toLowerCase().includes(search)
+                );
+                const matchesCategory = !categoryFilter || item.category === categoryFilter;
+                const matchesSupplier = !supplierFilter || item.supplier === supplierFilter;
+                return matchesSearch && matchesCategory && matchesSupplier;
+            });
+            
+            tbody.innerHTML = filtered.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.category}</td>
+                    <td>${item.supplier}</td>
+                    <td>${item.quantity}</td>
+                    <td>$${parseFloat(item.cost).toFixed(2)}</td>
+                    <td>${item.date}</td>
+                    <td>${item.notes || '-'}</td>
+                    <td class="actions">
+                        <button class="btn" onclick="editInventory('${item.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteInventory('${item.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderCustomers() {
+            const tbody = document.getElementById('customersTable');
+            const search = document.getElementById('customerSearch').value.toLowerCase();
+            const paymentFilter = document.getElementById('paymentFilter').value;
+            
+            let filtered = customersData.filter(item => {
+                const matchesSearch = Object.values(item).some(val => 
+                    String(val).toLowerCase().includes(search)
+                );
+                const matchesPayment = !paymentFilter || item.status === paymentFilter;
+                return matchesSearch && matchesPayment;
+            });
+            
+            tbody.innerHTML = filtered.map(item => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>$${parseFloat(item.amount).toFixed(2)}</td>
+                    <td>${item.date}</td>
+                    <td><span style="color: ${item.status === 'paid' ? 'green' : 'red'}; font-weight: 600;">${item.status.toUpperCase()}</span></td>
+                    <td>${item.paymentDate || '-'}</td>
+                    <td class="actions">
+                        <button class="btn" onclick="editCustomer('${item.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteCustomer('${item.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderPartners() {
+            const tbody = document.getElementById('partnersTable');
+            const search = document.getElementById('partnerSearch').value.toLowerCase();
+            
+            let filtered = partnersData.filter(item => {
+                return Object.values(item).some(val => 
+                    String(val).toLowerCase().includes(search)
+                );
+            });
+            
+            tbody.innerHTML = filtered.map(item => `
+                <tr>
+                    <td>${item.date}</td>
+                    <td>${item.from}</td>
+                    <td>${item.to}</td>
+                    <td>$${parseFloat(item.amount).toFixed(2)}</td>
+                    <td>${item.purpose}</td>
+                    <td>${item.notes || '-'}</td>
+                    <td class="actions">
+                        <button class="btn" onclick="editPartner('${item.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deletePartner('${item.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function updateSupplierFilter() {
+            const suppliers = [...new Set(inventoryData.map(item => item.supplier))];
+            const select = document.getElementById('supplierFilter');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">All Suppliers</option>' + 
+                suppliers.map(s => `<option value="${s}">${s}</option>`).join('');
+            select.value = currentValue;
+        }
+        
+        // Filter functions
+        function filterInventory() {
+            renderInventory();
+        }
+        
+        function filterCustomers() {
+            renderCustomers();
+        }
+        
+        function filterPartners() {
+            renderPartners();
+        }
+        
+        // Modal functions
+        function openAddInventory() {
+            document.getElementById('modalTitle').textContent = 'Add Inventory Item';
+            document.getElementById('modalForm').innerHTML = `
+                <div class="form-group">
+                    <label>Item Name *</label>
+                    <input type="text" id="itemName" required />
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="itemCategory" required>
+                        <option value="">Select...</option>
+                        <option value="Perfumes">Perfumes</option>
+                        <option value="Health & Wellness">Health & Wellness</option>
+                        <option value="Music">Music</option>
+                        <option value="Books">Books</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Supplier *</label>
+                    <input type="text" id="itemSupplier" required />
+                </div>
+                <div class="form-group">
+                    <label>Quantity *</label>
+                    <input type="number" id="itemQuantity" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label>Cost per Unit *</label>
+                    <input type="number" id="itemCost" step="0.01" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label>Purchase Date *</label>
+                    <input type="date" id="itemDate" required />
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="itemNotes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" onclick="saveInventory()">Save</button>
+                    <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+            document.getElementById('itemDate').valueAsDate = new Date();
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function openAddCustomer() {
+            document.getElementById('modalTitle').textContent = 'Add Customer Sale';
+            document.getElementById('modalForm').innerHTML = `
+                <div class="form-group">
+                    <label>Customer Name *</label>
+                    <input type="text" id="customerName" required />
+                </div>
+                <div class="form-group">
+                    <label>Amount *</label>
+                    <input type="number" id="customerAmount" step="0.01" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label>Sale Date *</label>
+                    <input type="date" id="customerDate" required />
+                </div>
+                <div class="form-group">
+                    <label>Payment Status *</label>
+                    <select id="customerStatus" required>
+                        <option value="unpaid">Unpaid</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Payment Date</label>
+                    <input type="date" id="customerPaymentDate" />
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" onclick="saveCustomer()">Save</button>
+                    <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+            document.getElementById('customerDate').valueAsDate = new Date();
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function openAddPartner() {
+            document.getElementById('modalTitle').textContent = 'Add Partner Payment';
+            document.getElementById('modalForm').innerHTML = `
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="partnerDate" required />
+                </div>
+                <div class="form-group">
+                    <label>From *</label>
+                    <input type="text" id="partnerFrom" required />
+                </div>
+                <div class="form-group">
+                    <label>To *</label>
+                    <input type="text" id="partnerTo" required />
+                </div>
+                <div class="form-group">
+                    <label>Amount *</label>
+                    <input type="number" id="partnerAmount" step="0.01" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label>Purpose *</label>
+                    <input type="text" id="partnerPurpose" required />
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="partnerNotes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" onclick="savePartner()">Save</button>
+                    <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+            document.getElementById('partnerDate').valueAsDate = new Date();
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        // Save functions
+        async function saveInventory(id) {
+            const item = {
+                name: document.getElementById('itemName').value,
+                category: document.getElementById('itemCategory').value,
+                supplier: document.getElementById('itemSupplier').value,
+                quantity: parseInt(document.getElementById('itemQuantity').value),
+                cost: parseFloat(document.getElementById('itemCost').value),
+                date: document.getElementById('itemDate').value,
+                notes: document.getElementById('itemNotes').value
+            };
+            
+            if (window.db && window.firestoreUtils) {
+                if (id) {
+                    await window.firestoreUtils.updateDoc(window.firestoreUtils.doc(window.db, 'inventory', id), item);
+                } else {
+                    await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'inventory'), item);
+                }
+            } else {
+                if (id) {
+                    const index = inventoryData.findIndex(i => i.id === id);
+                    inventoryData[index] = { ...item, id };
+                } else {
+                    item.id = Date.now().toString();
+                    inventoryData.push(item);
+                }
+                saveData();
+                renderInventory();
+                updateSupplierFilter();
+            }
+            closeModal();
+        }
+        
+        async function saveCustomer(id) {
+            const item = {
+                name: document.getElementById('customerName').value,
+                amount: parseFloat(document.getElementById('customerAmount').value),
+                date: document.getElementById('customerDate').value,
+                status: document.getElementById('customerStatus').value,
+                paymentDate: document.getElementById('customerPaymentDate').value
+            };
+            
+            if (window.db && window.firestoreUtils) {
+                if (id) {
+                    await window.firestoreUtils.updateDoc(window.firestoreUtils.doc(window.db, 'customers', id), item);
+                } else {
+                    await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'customers'), item);
+                }
+            } else {
+                if (id) {
+                    const index = customersData.findIndex(i => i.id === id);
+                    customersData[index] = { ...item, id };
+                } else {
+                    item.id = Date.now().toString();
+                    customersData.push(item);
+                }
+                saveData();
+                renderCustomers();
+            }
+            closeModal();
+        }
+        
+        async function savePartner(id) {
+            const item = {
+                date: document.getElementById('partnerDate').value,
+                from: document.getElementById('partnerFrom').value,
+                to: document.getElementById('partnerTo').value,
+                amount: parseFloat(document.getElementById('partnerAmount').value),
+                purpose: document.getElementById('partnerPurpose').value,
+                notes: document.getElementById('partnerNotes').value
+            };
+            
+            if (window.db && window.firestoreUtils) {
+                if (id) {
+                    await window.firestoreUtils.updateDoc(window.firestoreUtils.doc(window.db, 'partners', id), item);
+                } else {
+                    await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'partners'), item);
+                }
+            } else {
+                if (id) {
+                    const index = partnersData.findIndex(i => i.id === id);
+                    partnersData[index] = { ...item, id };
+                } else {
+                    item.id = Date.now().toString();
+                    partnersData.push(item);
+                }
+                saveData();
+                renderPartners();
+            }
+            closeModal();
+        }
+        
+        // Edit functions
+        function editInventory(id) {
+            const item = inventoryData.find(i => i.id === id);
+            document.getElementById('modalTitle').textContent = 'Edit Inventory Item';
+            document.getElementById('modalForm').innerHTML = `
+                <div class="form-group">
+                    <label>Item Name *</label>
+                    <input type="text" id="itemName" value="${item.name}" required />
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="itemCategory" required>
+                        <option value="">Select...</option>
+                        <option value="Perfumes" ${item.category === 'Perfumes' ? 'selected' : ''}>Perfumes</option>
+                        <option value="Health & Wellness" ${item.category === 'Health & Wellness' ? 'selected' : ''}>Health & Wellness</option>
+                        <option value="Music" ${item.category === 'Music' ? 'selected' : ''}>Music</option>
+                        <option value="Books" ${item.category === 'Books' ? 'selected' : ''}>Books</option>
+                        <option value="Other" ${item.category === 'Other' ? 'selected' : ''}>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Supplier *</label>
+                    <input type="text" id="itemSupplier" value="${item.supplier}" required />
+                </div>
+                <div class="form-group">
+                    <label>Quantity *</label>
+                    <input type="number" id="itemQuantity" value="${item.quantity}" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label>Cost per Unit *</label>
+                    <input type="number" id="itemCost" value="${item.cost}" step="0.01" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label>Purchase Date *</label>
+                    <input type="date" id="itemDate" value="${item.date}" required />
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="itemNotes" rows="3">${item.notes || ''}</textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" onclick="saveInventory('${id}')">Update</button>
+                    <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function editCustomer(id) {
+            const item = customersData.find(i => i.id === id);
+            document.getElementById('modalTitle').textContent = 'Edit Customer Sale';
+            document.getElementById('modalForm').innerHTML = `
+                <div class="form-group">
+                    <label>Customer Name *</label>
+                    <input type="text" id="customerName" value="${item.name}" required />
+                </div>
+                <div class="form-group">
+                    <label>Amount *</label>
+                    <input type="number" id="customerAmount" value="${item.amount}" step="0.01" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label>Sale Date *</label>
+                    <input type="date" id="customerDate" value="${item.date}" required />
+                </div>
+                <div class="form-group">
+                    <label>Payment Status *</label>
+                    <select id="customerStatus" required>
+                        <option value="unpaid" ${item.status === 'unpaid' ? 'selected' : ''}>Unpaid</option>
+                        <option value="paid" ${item.status === 'paid' ? 'selected' : ''}>Paid</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Payment Date</label>
+                    <input type="date" id="customerPaymentDate" value="${item.paymentDate || ''}" />
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" onclick="saveCustomer('${id}')">Update</button>
+                    <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function editPartner(id) {
+            const item = partnersData.find(i => i.id === id);
+            document.getElementById('modalTitle').textContent = 'Edit Partner Payment';
+            document.getElementById('modalForm').innerHTML = `
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="partnerDate" value="${item.date}" required />
+                </div>
+                <div class="form-group">
+                    <label>From *</label>
+                    <input type="text" id="partnerFrom" value="${item.from}" required />
+                </div>
+                <div class="form-group">
+                    <label>To *</label>
+                    <input type="text" id="partnerTo" value="${item.to}" required />
+                </div>
+                <div class="form-group">
+                    <label>Amount *</label>
+                    <input type="number" id="partnerAmount" value="${item.amount}" step="0.01" min="0" required />
+                </div>
+                <div class="form-group">
+                    <label>Purpose *</label>
+                    <input type="text" id="partnerPurpose" value="${item.purpose}" required />
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="partnerNotes" rows="3">${item.notes || ''}</textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" onclick="savePartner('${id}')">Update</button>
+                    <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        // Delete functions
+        async function deleteInventory(id) {
+            if (!confirm('Are you sure you want to delete this item?')) return;
+            
+            if (window.db && window.firestoreUtils) {
+                await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'inventory', id));
+            } else {
+                inventoryData = inventoryData.filter(i => i.id !== id);
+                saveData();
+                renderInventory();
+                updateSupplierFilter();
+            }
+        }
+        
+        async function deleteCustomer(id) {
+            if (!confirm('Are you sure you want to delete this sale?')) return;
+            
+            if (window.db && window.firestoreUtils) {
+                await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'customers', id));
+            } else {
+                customersData = customersData.filter(i => i.id !== id);
+                saveData();
+                renderCustomers();
+            }
+        }
+        
+        async function deletePartner(id) {
+            if (!confirm('Are you sure you want to delete this payment?')) return;
+            
+            if (window.db && window.firestoreUtils) {
+                await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'partners', id));
+            } else {
+                partnersData = partnersData.filter(i => i.id !== id);
+                saveData();
+                renderPartners();
+            }
+        }
+        
+        // Sort function
+        let sortDirection = {};
+        function sortTable(type, field) {
+            const dataMap = {
+                'inventory': inventoryData,
+                'customers': customersData,
+                'partners': partnersData
+            };
+            
+            const data = dataMap[type];
+            const key = `${type}-${field}`;
+            sortDirection[key] = !sortDirection[key];
+            
+            data.sort((a, b) => {
+                let aVal = a[field];
+                let bVal = b[field];
+                
+                if (field === 'cost' || field === 'amount' || field === 'quantity') {
+                    aVal = parseFloat(aVal);
+                    bVal = parseFloat(bVal);
+                }
+                
+                if (aVal < bVal) return sortDirection[key] ? -1 : 1;
+                if (aVal > bVal) return sortDirection[key] ? 1 : -1;
+                return 0;
+            });
+            
+            if (type === 'inventory') renderInventory();
+            if (type === 'customers') renderCustomers();
+            if (type === 'partners') renderPartners();
+        }
+        
+        // Export function
+        function exportData(type) {
+            const dataMap = {
+                'inventory': inventoryData,
+                'customers': customersData,
+                'partners': partnersData
+            };
+            
+            const data = dataMap[type];
+            if (data.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            const headers = Object.keys(data[0]).filter(k => k !== 'id');
+            const csv = [
+                headers.join(','),
+                ...data.map(row => headers.map(h => {
+                    const val = row[h] || '';
+                    return `"${val}"`;
+                }).join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${type}-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+        
+        // Allow Enter key to login
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+        
+        // Make functions global
+        window.login = login;
+        window.logout = logout;
+        window.switchTab = switchTab;
+        window.filterInventory = filterInventory;
+        window.filterCustomers = filterCustomers;
+        window.filterPartners = filterPartners;
+        window.openAddInventory = openAddInventory;
+        window.openAddCustomer = openAddCustomer;
+        window.openAddPartner = openAddPartner;
+        window.closeModal = closeModal;
+        window.saveInventory = saveInventory;
+        window.saveCustomer = saveCustomer;
+        window.savePartner = savePartner;
+        window.editInventory = editInventory;
+        window.editCustomer = editCustomer;
+        window.editPartner = editPartner;
+        window.deleteInventory = deleteInventory;
+        window.deleteCustomer = deleteCustomer;
+        window.deletePartner = deletePartner;
+        window.sortTable = sortTable;
+        window.exportData = exportData;
+        window.inventoryData = inventoryData;
+        window.customersData = customersData;
+        window.partnersData = partnersData;
+        window.authenticated = authenticated;
+    </script>
+</body>
+</html>
